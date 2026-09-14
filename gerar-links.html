@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gerador de links RSVP</title>
+  <style>
+    body{font-family:Arial,sans-serif;max-width:900px;margin:40px auto;padding:0 18px;background:#ff4b00;color:#17100d}
+    h1{font-size:44px;line-height:.95;margin-bottom:14px}.box{background:#f7eee5;border:3px solid #17100d;padding:20px;box-shadow:8px 8px #17100d}
+    textarea,input{width:100%;box-sizing:border-box;padding:12px;border:2px solid #17100d;background:#fff8f1;margin:7px 0 14px}
+    button{padding:12px 16px;border:2px solid #17100d;background:#17100d;color:#f7eee5;font-weight:800;cursor:pointer}
+    pre{white-space:pre-wrap;word-break:break-word;background:#fff8f1;border:2px solid #17100d;padding:14px;min-height:120px}
+  </style>
+</head>
+<body>
+  <h1>GERADOR DE LINKS<br>RSVP</h1>
+  <div class="box">
+    <label>URL publicada do site</label>
+    <input id="base" placeholder="https://usuario.github.io/repositorio/" />
+    <label>Convidados — um por linha</label>
+    <textarea id="names" rows="10" placeholder="Maria Bonfim\nLetícia Façanha\nFrederico Felipe"></textarea>
+    <button id="generate">GERAR LINKS</button>
+    <pre id="output"></pre>
+  </div>
+  <script>
+    document.getElementById('generate').onclick = () => {
+      const base = document.getElementById('base').value.trim().replace(/\/?$/, '/');
+      const names = document.getElementById('names').value.split('\n').map(x=>x.trim()).filter(Boolean);
+      const out = names.map((name, i) => {
+        const id = String(i + 1).padStart(3, '0');
+        const url = `${base}?id=${id}&nome=${encodeURIComponent(name)}`;
+        return `${name}\t${url}`;
+      }).join('\n');
+      document.getElementById('output').textContent = out;
+    };
+  </script>
+</body>
+</html>
