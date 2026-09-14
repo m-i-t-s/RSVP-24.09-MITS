@@ -1,110 +1,110 @@
-// Cole aqui a URL /exec do Google Apps Script quando a planilha estiver configurada.
+// Depois de publicar o Google Apps Script como Web App,
+// cole a URL /exec aqui.
 const APPS_SCRIPT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
 
-const params = new URLSearchParams(window.location.search);
-const idFromUrl = (params.get("id") || "").trim();
-
 const form = document.getElementById("rsvpForm");
-const nameInput = document.getElementById("nameInput");
-const phoneInput = document.getElementById("phoneInput");
-const emailInput = document.getElementById("emailInput");
-const inputs = [nameInput, phoneInput, emailInput];
+const fields = {
+  nome: document.getElementById("nome"),
+  telefone: document.getElementById("telefone"),
+  email: document.getElementById("email"),
+};
 const buttons = [...document.querySelectorAll("[data-response]")];
-const confirmation = document.getElementById("confirmation");
-const confirmationHeading = document.getElementById("confirmationHeading");
-const confirmationText = document.getElementById("confirmationText");
+const message = document.getElementById("message");
+const messageTitle = document.getElementById("messageTitle");
+const messageText = document.getElementById("messageText");
 const changeAnswer = document.getElementById("changeAnswer");
 
-// Pré-preenchimento opcional por URL.
-nameInput.value = params.get("nome") || "";
-phoneInput.value = params.get("telefone") || "";
-emailInput.value = params.get("email") || "";
-inputs.forEach(syncInputState);
+let selectedResponse = "";
 
-inputs.forEach((input) => {
-  input.addEventListener("focus", () => input.classList.add("editing"));
-  input.addEventListener("blur", () => {
-    input.classList.remove("editing");
-    syncInputState(input);
-  });
-  input.addEventListener("input", () => {
-    input.removeAttribute("aria-invalid");
-    syncInputState(input);
+buttons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedResponse = button.dataset.response;
   });
 });
 
-buttons.forEach((button) => {
-  button.addEventListener("click", async () => {
-    const resposta = button.dataset.response;
-    const nome = nameInput.value.trim();
-    const telefone = phoneInput.value.trim();
-    const email = emailInput.value.trim();
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    if (!nome) {
-      nameInput.setAttribute("aria-invalid", "true");
-      nameInput.focus();
-      return;
+  const nome = fields.nome.value.trim();
+  const telefone = fields.telefone.value.trim();
+  const email = fields.email.value.trim();
+
+  fields.nome.removeAttribute("aria-invalid");
+  fields.email.removeAttribute("aria-invalid");
+
+  if (!nome) {
+    fields.nome.setAttribute("aria-invalid", "true");
+    fields.nome.focus();
+    return;
+  }
+
+  if (email && !fields.email.validity.valid) {
+    fields.email.setAttribute("aria-invalid", "true");
+    fields.email.focus();
+    return;
+  }
+
+  if (!selectedResponse) return;
+
+  setBusy(true);
+
+  const payload = {
+    nome,
+    telefone,
+    email,
+    resposta: selectedResponse,
+    origem: window.location.href,
+  };
+
+  try {
+    const configured = await sendRSVP(payload);
+
+    if (configured) {
+      showMessage(selectedResponse, nome);
+    } else {
+      showMessage("TESTE", nome);
     }
-
-    if (email && !emailInput.validity.valid) {
-      emailInput.setAttribute("aria-invalid", "true");
-      emailInput.focus();
-      return;
-    }
-
-    buttons.forEach((btn) => (btn.disabled = true));
-
-    try {
-      await sendRSVP({
-        id: idFromUrl,
-        nome,
-        telefone,
-        email,
-        resposta,
-        origem: window.location.href,
-      });
-      showConfirmation(resposta, nome);
-    } catch (error) {
-      console.error(error);
-      alert("Não foi possível registrar sua resposta agora. Tente novamente.");
-      buttons.forEach((btn) => (btn.disabled = false));
-    }
-  });
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível registrar sua resposta agora. Tente novamente.");
+  } finally {
+    setBusy(false);
+  }
 });
 
 changeAnswer.addEventListener("click", () => {
-  confirmation.hidden = true;
-  form.hidden = false;
-  buttons.forEach((btn) => (btn.disabled = false));
+  message.hidden = true;
 });
 
-function syncInputState(input) {
-  input.classList.toggle("has-value", Boolean(input.value));
+function setBusy(busy) {
+  buttons.forEach((button) => (button.disabled = busy));
+  Object.values(fields).forEach((field) => (field.disabled = busy));
 }
 
-function showConfirmation(resposta, nome) {
-  form.hidden = true;
-  confirmation.hidden = false;
+function showMessage(response, nome) {
+  const primeiroNome = nome.split(/\s+/)[0];
 
-  if (resposta === "SIM") {
-    confirmationHeading.innerHTML = "PRESENÇA<br>CONFIRMADA.";
-    confirmationText.textContent = `Obrigada, ${firstName(nome)}. Nos vemos dia 24.09, às 18h.`;
+  if (response === "SIM") {
+    messageTitle.textContent = "PRESENÇA CONFIRMADA";
+    messageText.textContent = `Obrigada, ${primeiroNome}.`;
+  } else if (response === "NÃO") {
+    messageTitle.textContent = "RESPOSTA REGISTRADA";
+    messageText.textContent = `Obrigada por avisar, ${primeiroNome}.`;
   } else {
-    confirmationHeading.innerHTML = "RESPOSTA<br>REGISTRADA.";
-    confirmationText.textContent = `Obrigada por avisar, ${firstName(nome)}.`;
+    messageTitle.textContent = "MODO DE TESTE";
+    messageText.textContent = "O visual está funcionando, mas a planilha ainda não foi conectada.";
   }
-}
 
-function firstName(nome) {
-  return nome.split(/\s+/)[0];
+  message.hidden = false;
 }
 
 async function sendRSVP(payload) {
-  // Enquanto a integração com a planilha não estiver ativa, mantém o site testável.
-  if (!APPS_SCRIPT_URL.startsWith("https://script.google.com/")) {
-    await new Promise((resolve) => setTimeout(resolve, 200));
+  const configured = APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") && APPS_SCRIPT_URL.endsWith("/exec");
+
+  if (!configured) {
     console.table(payload);
-    return;
+    await new Promise((resolve) => setTimeout(resolve, 250));
+    return false;
   }
 
   await fetch(APPS_SCRIPT_URL, {
@@ -115,4 +115,6 @@ async function sendRSVP(payload) {
     },
     body: new URLSearchParams(payload),
   });
+
+  return true;
 }

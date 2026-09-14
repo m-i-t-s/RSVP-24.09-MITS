@@ -9,33 +9,56 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="page">
-    <section class="stage" id="stage" aria-label="RSVP Coordenadas Improváveis">
+  <main class="experience">
+    <section class="stage" aria-label="RSVP Coordenadas Improváveis">
+      <img class="artwork" src="assets/layout.svg" alt="Convite Coordenadas Improváveis" />
+
       <form id="rsvpForm" class="rsvp-form" novalidate>
-        <label class="sr-only" for="nameInput">Nome</label>
-        <input class="overlay-input input-name" id="nameInput" name="nome" type="text" autocomplete="name" required aria-label="Nome" />
+        <label class="sr-only" for="nome">Nome</label>
+        <input
+          id="nome"
+          class="field field-name"
+          name="nome"
+          type="text"
+          autocomplete="name"
+          placeholder="NOME"
+          required
+        />
 
-        <label class="sr-only" for="phoneInput">Telefone</label>
-        <input class="overlay-input input-phone" id="phoneInput" name="telefone" type="tel" autocomplete="tel" aria-label="Telefone" />
+        <label class="sr-only" for="telefone">Telefone</label>
+        <input
+          id="telefone"
+          class="field field-phone"
+          name="telefone"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="TELEFONE"
+        />
 
-        <label class="sr-only" for="emailInput">Email</label>
-        <input class="overlay-input input-email" id="emailInput" name="email" type="email" autocomplete="email" aria-label="Email" />
+        <label class="sr-only" for="email">Email</label>
+        <input
+          id="email"
+          class="field field-email"
+          name="email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          placeholder="EMAIL"
+        />
 
-        <button class="hit-button button-yes" type="button" data-response="SIM" aria-label="Sim, estarei lá"></button>
-        <button class="hit-button button-no" type="button" data-response="NÃO" aria-label="Desculpe, não poderei ir"></button>
+        <button class="choice choice-yes" type="submit" data-response="SIM" aria-label="Sim, estarei lá"></button>
+        <button class="choice choice-no" type="submit" data-response="NÃO" aria-label="Desculpe, não poderei ir"></button>
       </form>
 
-      <section class="confirmation" id="confirmation" hidden aria-live="polite">
-        <div class="confirmation-title">RSVP</div>
-        <div class="confirmation-content">
-          <h1 id="confirmationHeading">PRESENÇA<br>CONFIRMADA.</h1>
-          <p id="confirmationText"></p>
-          <button type="button" id="changeAnswer" class="change-answer">ALTERAR RESPOSTA</button>
-        </div>
-      </section>
+      <div class="message" id="message" hidden aria-live="polite">
+        <strong id="messageTitle"></strong>
+        <span id="messageText"></span>
+        <button type="button" id="changeAnswer">ALTERAR RESPOSTA</button>
+      </div>
     </section>
 
-    <div class="poster-mobile" aria-hidden="true"></div>
+    <section class="mobile-invite" aria-label="Convite da exposição"></section>
   </main>
 
   <script src="script.js"></script>

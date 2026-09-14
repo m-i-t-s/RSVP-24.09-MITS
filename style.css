@@ -1,155 +1,164 @@
 :root {
-  --cream: #ffede1;
+  --offwhite: #ffede1;
+  --brown: #1b140f;
   --orange: #ef5423;
-  --ink: #1b140f;
-  --paper: #ffede1;
+  --stage-ratio: 1295.07 / 946;
+  --left-ratio: 620.43 / 946;
+  --right-ratio: 674.64 / 946;
 }
 
 * { box-sizing: border-box; }
-
-html, body { margin: 0; min-height: 100%; }
+html, body { min-height: 100%; }
 
 body {
-  background: var(--cream);
-  color: var(--ink);
+  margin: 0;
+  background: var(--offwhite);
+  color: var(--brown);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-button, input { font: inherit; border-radius: 0; }
+button, input { font: inherit; }
 
-.page {
-  min-height: 100vh;
-  min-height: 100svh;
+.experience {
+  min-height: 100dvh;
   display: grid;
   place-items: center;
-  overflow: auto;
-  background: var(--cream);
 }
 
 .stage {
   position: relative;
-  width: min(100vw, calc(100vh * 1.36899577));
-  width: min(100vw, calc(100svh * 1.36899577));
-  aspect-ratio: 1295.07 / 946;
-  flex: none;
-  background-image: url("assets/layout.svg");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 100% 100%;
+  width: min(100vw, calc(100dvh * 1.36899577));
+  aspect-ratio: var(--stage-ratio);
+  overflow: hidden;
   container-type: inline-size;
+  background: var(--offwhite);
+}
+
+.artwork {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
 }
 
 .rsvp-form { position: absolute; inset: 0; }
 
-.overlay-input {
+.field,
+.choice {
   position: absolute;
-  left: 2.501%;
-  width: 42.636%;
-  height: 5.109%;
-  margin: 0;
   border: 0;
+  border-radius: 0;
   outline: 0;
-  padding: 0 0.85cqw;
-  background: transparent;
-  color: #ffede1;
-  caret-color: var(--orange);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 1.86cqw;
-  line-height: 1;
-  font-weight: 400;
-  text-transform: none;
 }
 
-.overlay-input.editing,
-.overlay-input.has-value {
-  background: var(--ink);
-}
-
-.overlay-input[aria-invalid="true"] {
-  box-shadow: inset 0 0 0 max(2px, .15cqw) var(--orange);
-}
-
-.input-name { top: 19.511%; }
-.input-phone { top: 30.870%; }
-.input-email { top: 42.174%; }
-
-.hit-button {
-  position: absolute;
-  left: 2.501%;
-  width: 42.636%;
-  height: 11.522%;
+.field {
+  left: 2.5010%;
+  width: 42.6433%;
+  height: 5.1469%;
   margin: 0;
+  padding: 0 0.8cqw;
+  background: #1b140f;
+  color: #ffede1;
+  caret-color: #ffede1;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2.05cqw;
+  font-weight: 400;
+  line-height: 1;
+  appearance: none;
+}
+
+.field::placeholder {
+  color: #ffede1;
+  opacity: 1;
+}
+
+.field:focus {
+  box-shadow: inset 0 0 0 2px #ffede1;
+}
+
+.field[aria-invalid="true"] {
+  box-shadow: inset 0 0 0 3px #ef5423;
+}
+
+.field-name { top: 19.5021%; }
+.field-phone { top: 30.8573%; }
+.field-email { top: 42.2125%; }
+
+/* Mantém as cores no autofill de Chrome/Safari. */
+.field:-webkit-autofill,
+.field:-webkit-autofill:hover,
+.field:-webkit-autofill:focus {
+  -webkit-text-fill-color: #ffede1;
+  box-shadow: inset 0 0 0 1000px #1b140f;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.choice {
+  left: 2.4948%;
+  width: 42.6494%;
+  height: 11.4979%;
   padding: 0;
-  border: 0;
   background: transparent;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
-.hit-button:focus-visible {
-  outline: max(2px, .16cqw) solid #fff;
-  outline-offset: calc(max(2px, .16cqw) * -1);
+.choice-yes { top: 67.1977%; }
+.choice-no { top: 84.7230%; }
+
+.choice:hover,
+.choice:focus-visible {
+  box-shadow: inset 0 0 0 3px rgba(255, 237, 225, 0.9);
 }
 
-.hit-button:disabled { cursor: wait; }
-.button-yes { top: 67.174%; }
-.button-no { top: 84.674%; }
+.choice:active { background: rgba(255,255,255,.08); }
+.choice:disabled { cursor: wait; }
 
-.confirmation {
+.message {
   position: absolute;
-  inset: 0 auto 0 0;
-  width: 47.916%;
-  background: var(--paper);
-  z-index: 4;
+  z-index: 5;
+  left: 5.2%;
+  top: 52.2%;
+  width: 37.3%;
+  padding: 1.25cqw 1.45cqw;
+  background: #ffede1;
+  border: 2px solid #1b140f;
+  color: #1b140f;
+  box-shadow: 0.55cqw 0.55cqw 0 #1b140f;
 }
 
-.confirmation-title {
-  position: absolute;
-  top: 4.6%;
-  left: 5.1%;
-  color: var(--orange);
-  font-size: 4.5cqw;
-  line-height: 1;
-  font-weight: 900;
-  letter-spacing: -0.055em;
-}
+.message strong,
+.message span { display: block; }
 
-.confirmation-content {
-  position: absolute;
-  left: 5.1%;
-  right: 5.8%;
-  top: 35%;
-}
-
-.confirmation h1 {
-  margin: 0;
-  font-size: 4.25cqw;
-  line-height: .9;
-  letter-spacing: -.055em;
-  font-weight: 900;
-}
-
-.confirmation p {
-  margin: 2.2cqw 0 0;
+.message strong {
   font-size: 1.65cqw;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.message span {
+  margin-top: .6cqw;
+  font-size: 1.05cqw;
   line-height: 1.25;
 }
 
-.change-answer {
-  margin-top: 2.5cqw;
+.message button {
+  margin-top: .8cqw;
+  padding: 0;
   border: 0;
-  border-bottom: 1px solid currentColor;
-  padding: 0 0 .2cqw;
   background: transparent;
-  color: var(--ink);
-  font-size: .85cqw;
+  color: #1b140f;
+  font-size: .72cqw;
   font-weight: 700;
-  letter-spacing: .06em;
+  text-decoration: underline;
   cursor: pointer;
 }
 
-.poster-mobile { display: none; }
-
+.mobile-invite { display: none; }
 .sr-only {
   position: absolute;
   width: 1px;
@@ -162,60 +171,71 @@ button, input { font: inherit; border-radius: 0; }
   border: 0;
 }
 
-[hidden] { display: none !important; }
-
 @media (max-width: 700px) {
-  .page {
+  body { background: var(--offwhite); }
+
+  .experience {
     display: block;
-    min-height: 100svh;
-    overflow: visible;
+    min-height: 100dvh;
   }
 
+  /* No celular, a esquerda do SVG vira o primeiro painel em tamanho legível. */
   .stage {
     width: 100%;
-    aspect-ratio: 1207 / 1840;
-    background-size: 208.699% 100%;
-    background-position: left top;
-    container-type: inline-size;
-  }
-
-  .overlay-input {
-    left: 5.219%;
-    width: 88.981%;
-    font-size: 3.9cqw;
-    padding: 0 1.7cqw;
-  }
-
-  .hit-button {
-    left: 5.219%;
-    width: 88.981%;
-  }
-
-  .confirmation {
-    width: 100%;
-  }
-
-  .confirmation-title {
-    left: 5.2%;
-    font-size: 9cqw;
-  }
-
-  .confirmation-content {
-    left: 5.2%;
-    right: 5.8%;
-  }
-
-  .confirmation h1 { font-size: 9cqw; }
-  .confirmation p { margin-top: 5cqw; font-size: 4cqw; }
-  .change-answer { margin-top: 6cqw; font-size: 2.8cqw; }
-
-  .poster-mobile {
-    display: block;
-    width: 100%;
-    aspect-ratio: 1312 / 1840;
+    aspect-ratio: var(--left-ratio);
     background-image: url("assets/layout.svg");
     background-repeat: no-repeat;
-    background-size: 191.997% 100%;
+    background-size: 208.744% 100%;
+    background-position: left top;
+  }
+
+  .artwork { display: none; }
+
+  .field {
+    left: 5.219%;
+    width: 89.010%;
+    height: 5.1469%;
+    padding: 0 1.7cqw;
+    font-size: 4.3cqw;
+  }
+
+  .field-name { top: 19.5021%; }
+  .field-phone { top: 30.8573%; }
+  .field-email { top: 42.2125%; }
+
+  .choice {
+    left: 5.206%;
+    width: 89.023%;
+    height: 11.4979%;
+  }
+
+  .choice-yes { top: 67.1977%; }
+  .choice-no { top: 84.7230%; }
+
+  .message {
+    left: 10%;
+    top: 52%;
+    width: 80%;
+    padding: 3.2cqw 3.6cqw;
+    box-shadow: 1.4cqw 1.4cqw 0 #1b140f;
+  }
+
+  .message strong { font-size: 4.6cqw; }
+  .message span { margin-top: 1.5cqw; font-size: 3.4cqw; }
+  .message button { margin-top: 2cqw; font-size: 2.7cqw; }
+
+  /* Segunda metade do mesmo SVG, sem recriar a arte. */
+  .mobile-invite {
+    display: block;
+    width: 100%;
+    aspect-ratio: var(--right-ratio);
+    background-image: url("assets/layout.svg");
+    background-repeat: no-repeat;
+    background-size: 191.97% 100%;
     background-position: right top;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
 }
