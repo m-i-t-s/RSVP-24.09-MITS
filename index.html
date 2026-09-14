@@ -2,64 +2,40 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#ff4b00" />
-  <meta name="description" content="RSVP — COORDENADAS → IMPROVÁVEIS, MITS Galeria" />
-  <title>RSVP — Coordenadas → Improváveis</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#fde3d5" />
+  <meta name="description" content="RSVP — Coordenadas Improváveis, MITS Galeria" />
+  <title>RSVP — Coordenadas Improváveis</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="page-shell">
-    <section class="poster-panel" aria-label="Convite da exposição">
-      <img src="assets/convite.png" alt="Convite da exposição Coordenadas → Improváveis" class="poster-image" />
+  <main class="page">
+    <section class="stage" id="stage" aria-label="RSVP Coordenadas Improváveis">
+      <form id="rsvpForm" class="rsvp-form" novalidate>
+        <label class="sr-only" for="nameInput">Nome</label>
+        <input class="overlay-input input-name" id="nameInput" name="nome" type="text" autocomplete="name" required aria-label="Nome" />
+
+        <label class="sr-only" for="phoneInput">Telefone</label>
+        <input class="overlay-input input-phone" id="phoneInput" name="telefone" type="tel" autocomplete="tel" aria-label="Telefone" />
+
+        <label class="sr-only" for="emailInput">Email</label>
+        <input class="overlay-input input-email" id="emailInput" name="email" type="email" autocomplete="email" aria-label="Email" />
+
+        <button class="hit-button button-yes" type="button" data-response="SIM" aria-label="Sim, estarei lá"></button>
+        <button class="hit-button button-no" type="button" data-response="NÃO" aria-label="Desculpe, não poderei ir"></button>
+      </form>
+
+      <section class="confirmation" id="confirmation" hidden aria-live="polite">
+        <div class="confirmation-title">RSVP</div>
+        <div class="confirmation-content">
+          <h1 id="confirmationHeading">PRESENÇA<br>CONFIRMADA.</h1>
+          <p id="confirmationText"></p>
+          <button type="button" id="changeAnswer" class="change-answer">ALTERAR RESPOSTA</button>
+        </div>
+      </section>
     </section>
 
-    <section class="rsvp-panel" aria-labelledby="rsvp-title">
-      <div class="rsvp-card">
-        <header class="brand-block">
-          <div class="eyebrow">MITS GALERIA</div>
-          <h1 id="rsvp-title">COORDENADAS<br><span>→ IMPROVÁVEIS</span></h1>
-        </header>
-
-        <div class="event-meta" aria-label="Informações do evento">
-          <div><strong>24.09</strong><span>quinta</span></div>
-          <div><strong>18H</strong><span>abertura</span></div>
-          <div class="event-address"><strong>AL. TIETÊ, 618</strong><span>CASA 7 · SÃO PAULO</span></div>
-        </div>
-
-        <div class="question-block" id="questionBlock">
-          <p class="hello" id="hello">Olá!</p>
-          <p class="question">Podemos contar com sua presença?</p>
-
-          <div class="fallback-name" id="fallbackName" hidden>
-            <label for="nameInput">Seu nome</label>
-            <input id="nameInput" name="nome" type="text" autocomplete="name" placeholder="Digite seu nome" />
-          </div>
-
-          <div class="actions" role="group" aria-label="Confirmação de presença">
-            <button type="button" class="btn btn-primary" data-response="SIM">
-              SIM, ESTAREI LÁ
-              <span aria-hidden="true">↘</span>
-            </button>
-            <button type="button" class="btn btn-secondary" data-response="NÃO">
-              NÃO VOU CONSEGUIR
-            </button>
-          </div>
-
-        </div>
-
-        <div class="success-block" id="successBlock" hidden aria-live="polite">
-          <div class="stamp">RSVP</div>
-          <h2 id="successTitle">PRESENÇA CONFIRMADA</h2>
-          <p id="successText">Nos vemos dia 24.09, às 18h.</p>
-          <button type="button" class="text-button" id="changeAnswer">alterar resposta</button>
-        </div>
-
-      </div>
-    </section>
+    <div class="poster-mobile" aria-hidden="true"></div>
   </main>
 
   <script src="script.js"></script>

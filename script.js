@@ -1,95 +1,112 @@
-// 1) Depois de publicar o Google Apps Script como Web App,
-// cole a URL abaixo. Exemplo:
-// const APPS_SCRIPT_URL = "https://script.google.com/macros/s/SEU_ID/exec";
+// Cole aqui a URL /exec do Google Apps Script quando a planilha estiver configurada.
 const APPS_SCRIPT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
 
 const params = new URLSearchParams(window.location.search);
-const nameFromUrl = (params.get("nome") || "").trim();
 const idFromUrl = (params.get("id") || "").trim();
 
-const hello = document.getElementById("hello");
-const fallbackName = document.getElementById("fallbackName");
+const form = document.getElementById("rsvpForm");
 const nameInput = document.getElementById("nameInput");
-const questionBlock = document.getElementById("questionBlock");
-const successBlock = document.getElementById("successBlock");
-const successTitle = document.getElementById("successTitle");
-const successText = document.getElementById("successText");
-const changeAnswer = document.getElementById("changeAnswer");
+const phoneInput = document.getElementById("phoneInput");
+const emailInput = document.getElementById("emailInput");
+const inputs = [nameInput, phoneInput, emailInput];
 const buttons = [...document.querySelectorAll("[data-response]")];
+const confirmation = document.getElementById("confirmation");
+const confirmationHeading = document.getElementById("confirmationHeading");
+const confirmationText = document.getElementById("confirmationText");
+const changeAnswer = document.getElementById("changeAnswer");
 
-if (nameFromUrl) {
-  hello.textContent = `${nameFromUrl},`;
-} else {
-  hello.textContent = "Olá!";
-  fallbackName.hidden = false;
-}
+// Pré-preenchimento opcional por URL.
+nameInput.value = params.get("nome") || "";
+phoneInput.value = params.get("telefone") || "";
+emailInput.value = params.get("email") || "";
+inputs.forEach(syncInputState);
+
+inputs.forEach((input) => {
+  input.addEventListener("focus", () => input.classList.add("editing"));
+  input.addEventListener("blur", () => {
+    input.classList.remove("editing");
+    syncInputState(input);
+  });
+  input.addEventListener("input", () => {
+    input.removeAttribute("aria-invalid");
+    syncInputState(input);
+  });
+});
 
 buttons.forEach((button) => {
   button.addEventListener("click", async () => {
-    const response = button.dataset.response;
-    const name = nameFromUrl || nameInput.value.trim();
+    const resposta = button.dataset.response;
+    const nome = nameInput.value.trim();
+    const telefone = phoneInput.value.trim();
+    const email = emailInput.value.trim();
 
-    if (!name) {
-      nameInput.focus();
+    if (!nome) {
       nameInput.setAttribute("aria-invalid", "true");
+      nameInput.focus();
       return;
     }
 
-    nameInput.removeAttribute("aria-invalid");
+    if (email && !emailInput.validity.valid) {
+      emailInput.setAttribute("aria-invalid", "true");
+      emailInput.focus();
+      return;
+    }
+
     buttons.forEach((btn) => (btn.disabled = true));
 
     try {
       await sendRSVP({
-        nome: name,
         id: idFromUrl,
-        resposta: response,
+        nome,
+        telefone,
+        email,
+        resposta,
         origem: window.location.href,
       });
-
-      showConfirmation(response, name);
-      localStorage.setItem("mits-rsvp-response", response);
-      localStorage.setItem("mits-rsvp-name", name);
+      showConfirmation(resposta, nome);
     } catch (error) {
       console.error(error);
-      alert("Não conseguimos registrar agora. Tente de novo em alguns segundos.");
+      alert("Não foi possível registrar sua resposta agora. Tente novamente.");
       buttons.forEach((btn) => (btn.disabled = false));
     }
   });
 });
 
 changeAnswer.addEventListener("click", () => {
-  successBlock.hidden = true;
-  questionBlock.hidden = false;
+  confirmation.hidden = true;
+  form.hidden = false;
   buttons.forEach((btn) => (btn.disabled = false));
 });
 
-function showConfirmation(response, name) {
-  questionBlock.hidden = true;
-  successBlock.hidden = false;
+function syncInputState(input) {
+  input.classList.toggle("has-value", Boolean(input.value));
+}
 
-  if (response === "SIM") {
-    successTitle.textContent = "PRESENÇA CONFIRMADA";
-    successText.textContent = `Obrigada, ${firstName(name)}. Nos vemos dia 24.09, às 18h.`;
+function showConfirmation(resposta, nome) {
+  form.hidden = true;
+  confirmation.hidden = false;
+
+  if (resposta === "SIM") {
+    confirmationHeading.innerHTML = "PRESENÇA<br>CONFIRMADA.";
+    confirmationText.textContent = `Obrigada, ${firstName(nome)}. Nos vemos dia 24.09, às 18h.`;
   } else {
-    successTitle.textContent = "RESPOSTA REGISTRADA";
-    successText.textContent = `Obrigada por avisar, ${firstName(name)}.`;
+    confirmationHeading.innerHTML = "RESPOSTA<br>REGISTRADA.";
+    confirmationText.textContent = `Obrigada por avisar, ${firstName(nome)}.`;
   }
 }
 
-function firstName(name) {
-  return name.split(/\s+/)[0];
+function firstName(nome) {
+  return nome.split(/\s+/)[0];
 }
 
 async function sendRSVP(payload) {
-  // Para testar o layout antes de configurar a planilha, deixe a URL padrão.
+  // Enquanto a integração com a planilha não estiver ativa, mantém o site testável.
   if (!APPS_SCRIPT_URL.startsWith("https://script.google.com/")) {
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    await new Promise((resolve) => setTimeout(resolve, 200));
     console.table(payload);
     return;
   }
 
-  // no-cors permite envio simples do GitHub Pages para Apps Script.
-  // A confirmação visual acontece após o navegador disparar a requisição.
   await fetch(APPS_SCRIPT_URL, {
     method: "POST",
     mode: "no-cors",

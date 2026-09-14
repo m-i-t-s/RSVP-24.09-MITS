@@ -1,9 +1,9 @@
 /**
- * GOOGLE APPS SCRIPT — backend do RSVP
+ * Backend do RSVP no Google Apps Script.
  *
  * 1. Crie uma planilha Google.
  * 2. Extensões > Apps Script.
- * 3. Cole este arquivo.
+ * 3. Cole este código.
  * 4. Troque SHEET_ID pelo ID da planilha.
  * 5. Implantar > Nova implantação > Aplicativo da Web.
  *    Executar como: você
@@ -22,8 +22,10 @@ function doPost(e) {
     const sheet = getSheet_();
     const data = e.parameter || {};
 
-    const nome = sanitize_(data.nome);
     const id = sanitize_(data.id);
+    const nome = sanitize_(data.nome);
+    const telefone = sanitize_(data.telefone);
+    const email = sanitize_(data.email);
     const resposta = sanitize_(data.resposta);
     const origem = sanitize_(data.origem);
     const agora = new Date();
@@ -32,13 +34,15 @@ function doPost(e) {
       return json_({ ok: false, error: 'Dados incompletos' });
     }
 
-    // Se houver ID, atualiza a resposta existente em vez de criar duplicata.
+    // Links individuais com ID atualizam a mesma linha se a pessoa responder novamente.
     if (id) {
       const rows = sheet.getDataRange().getValues();
       for (let i = 1; i < rows.length; i++) {
         if (String(rows[i][0]) === id) {
-          sheet.getRange(i + 1, 2, 1, 5).setValues([[
+          sheet.getRange(i + 1, 2, 1, 7).setValues([[
             nome,
+            telefone,
+            email,
             resposta,
             agora,
             origem,
@@ -49,7 +53,17 @@ function doPost(e) {
       }
     }
 
-    sheet.appendRow([id, nome, resposta, agora, origem, 'novo']);
+    sheet.appendRow([
+      id,
+      nome,
+      telefone,
+      email,
+      resposta,
+      agora,
+      origem,
+      'novo'
+    ]);
+
     return json_({ ok: true, updated: false });
   } finally {
     lock.releaseLock();
@@ -69,7 +83,16 @@ function getSheet_() {
   }
 
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(['ID', 'Nome', 'Resposta', 'Data', 'Origem', 'Status']);
+    sheet.appendRow([
+      'ID',
+      'Nome',
+      'Telefone',
+      'Email',
+      'Resposta',
+      'Data',
+      'Origem',
+      'Status'
+    ]);
     sheet.setFrozenRows(1);
   }
 
