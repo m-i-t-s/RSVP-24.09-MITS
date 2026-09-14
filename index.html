@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffede1" />
+  <meta name="description" content="RSVP — Coordenadas Improváveis, MITS Galeria" />
+  <title>RSVP — Coordenadas Improváveis</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="experience">
+    <section class="stage" aria-label="RSVP Coordenadas Improváveis">
+      <img class="artwork" src="assets/layout.svg" alt="Convite Coordenadas Improváveis" />
+
+      <form id="rsvpForm" class="rsvp-form" novalidate>
+        <label class="sr-only" for="nome">Nome</label>
+        <input
+          id="nome"
+          class="field field-name"
+          name="nome"
+          type="text"
+          autocomplete="name"
+          placeholder="NOME"
+          required
+        />
+
+        <label class="sr-only" for="telefone">Telefone</label>
+        <input
+          id="telefone"
+          class="field field-phone"
+          name="telefone"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="TELEFONE"
+        />
+
+        <label class="sr-only" for="email">Email</label>
+        <input
+          id="email"
+          class="field field-email"
+          name="email"
+          type="email"
+          inputmode="email"
+          autocomplete="email"
+          placeholder="EMAIL"
+        />
+
+        <button class="choice choice-yes" type="submit" data-response="SIM" aria-label="Sim, estarei lá"></button>
+        <button class="choice choice-no" type="submit" data-response="NÃO" aria-label="Desculpe, não poderei ir"></button>
+      </form>
+
+      <div class="message" id="message" hidden aria-live="polite">
+        <strong id="messageTitle"></strong>
+        <span id="messageText"></span>
+        <button type="button" id="changeAnswer">ALTERAR RESPOSTA</button>
+      </div>
+    </section>
+
+    <section class="mobile-invite" aria-label="Convite da exposição"></section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
