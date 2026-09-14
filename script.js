@@ -1,6 +1,5 @@
-// Depois de publicar o Google Apps Script como Web App,
-// cole a URL /exec aqui.
-const APPS_SCRIPT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgbP-6IFp_5mZmOBFSTLXAjxXSBjur7sMss4EszzFVARvrlkD_oh8sP9oJMeRGD-xa/exec";
 
 const form = document.getElementById("rsvpForm");
 const fields = {
