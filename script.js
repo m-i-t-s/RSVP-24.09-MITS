@@ -98,22 +98,44 @@ function showMessage(response, nome) {
 }
 
 async function sendRSVP(payload) {
-  const configured = APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") && APPS_SCRIPT_URL.endsWith("/exec");
+  const configured =
+    APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") &&
+    APPS_SCRIPT_URL.endsWith("/exec");
 
   if (!configured) {
     console.table(payload);
-    await new Promise((resolve) => setTimeout(resolve, 250));
     return false;
   }
 
-  await fetch(APPS_SCRIPT_URL, {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-    },
-    body: new URLSearchParams(payload),
+  const iframeName = "rsvp_" + Date.now();
+
+  const iframe = document.createElement("iframe");
+  iframe.name = iframeName;
+  iframe.style.display = "none";
+
+  const postForm = document.createElement("form");
+  postForm.method = "POST";
+  postForm.action = APPS_SCRIPT_URL;
+  postForm.target = iframeName;
+  postForm.style.display = "none";
+
+  Object.entries(payload).forEach(([key, value]) => {
+    const input = document.createElement("input");
+    input.type = "hidden";
+    input.name = key;
+    input.value = value ?? "";
+    postForm.appendChild(input);
   });
+
+  document.body.appendChild(iframe);
+  document.body.appendChild(postForm);
+
+  postForm.submit();
+
+  setTimeout(() => {
+    postForm.remove();
+    iframe.remove();
+  }, 3000);
 
   return true;
 }
