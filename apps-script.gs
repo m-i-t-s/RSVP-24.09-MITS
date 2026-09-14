@@ -1,15 +1,4 @@
-/*
-  BACKEND DO RSVP
-  1. Crie uma planilha no Google Sheets.
-  2. Copie o ID da URL da planilha e cole em SHEET_ID.
-  3. No Google Apps Script, cole este arquivo.
-  4. Implantar > Nova implantação > Aplicativo da Web.
-     Executar como: você
-     Quem tem acesso: qualquer pessoa
-  5. Copie a URL terminada em /exec e cole em script.js.
-*/
-
-const SHEET_ID = "COLE_AQUI_O_ID_DA_PLANILHA";
+const SHEET_ID = "1Js1XzyZVBrAwmOV9h2gIO-sCD_MTz8l499_PfE9A5Is";
 const SHEET_NAME = "RSVP";
 
 function doPost(e) {
