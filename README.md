@@ -21,3 +21,9 @@ Faça **Commit changes**. O GitHub Pages publica a nova versão automaticamente.
 
 ## Google Sheets
 Para registrar respostas, configure `apps-script.gs` e cole a URL `/exec` gerada em `script.js`.
+
+
+Paleta final:
+- Off-white: #ffede1
+- Laranja: #ef5423
+- Marrom: #1b140f

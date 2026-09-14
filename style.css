@@ -1,8 +1,8 @@
 :root {
-  --cream: #fde3d5;
-  --orange: #f0492a;
-  --ink: #15110f;
-  --paper: #fde3d5;
+  --cream: #ffede1;
+  --orange: #ef5423;
+  --ink: #1b140f;
+  --paper: #ffede1;
 }
 
 * { box-sizing: border-box; }
@@ -51,7 +51,7 @@ button, input { font: inherit; border-radius: 0; }
   outline: 0;
   padding: 0 0.85cqw;
   background: transparent;
-  color: #fde3d5;
+  color: #ffede1;
   caret-color: var(--orange);
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.86cqw;
