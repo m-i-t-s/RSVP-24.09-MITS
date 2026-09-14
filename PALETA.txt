@@ -1,4 +1,0 @@
-Paleta exata
-Off-white: #ffede1
-Laranja: #ef5423
-Marrom: #1b140f
