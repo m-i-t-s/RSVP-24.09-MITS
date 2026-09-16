@@ -107,8 +107,7 @@ button, input { font: inherit; }
   -webkit-tap-highlight-color: transparent;
 }
 
-.choice-yes { top: 67.1977%; }
-.choice-no { top: 84.7230%; }
+.choice-yes { top: 85.5540%; }
 
 .choice:hover,
 .choice:focus-visible {
@@ -209,8 +208,7 @@ button, input { font: inherit; }
     height: 11.4979%;
   }
 
-  .choice-yes { top: 67.1977%; }
-  .choice-no { top: 84.7230%; }
+  .choice-yes { top: 85.5540%; }
 
   .message {
     left: 10%;
