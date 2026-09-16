@@ -33,16 +33,19 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
-  setBusy(true);
+  // Capture os dados ANTES de desabilitar os campos.
+  // Campos disabled não entram em FormData, o que fazia nome/telefone/email chegarem vazios na Netlify.
   origem.value = window.location.href;
+  const formData = new FormData(form);
+  const body = new URLSearchParams();
+
+  for (const [key, value] of formData.entries()) {
+    body.append(key, value);
+  }
+
+  setBusy(true);
 
   try {
-    const formData = new FormData(form);
-    const body = new URLSearchParams();
-
-    for (const [key, value] of formData.entries()) {
-      body.append(key, value);
-    }
 
     const response = await fetch("/", {
       method: "POST",
