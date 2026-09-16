@@ -1,7 +1,4 @@
-// URL /exec do Web App (Implantar → Gerenciar implantações → URL do app da Web).
-// Use SEMPRE a URL https://script.google.com/macros/s/<DEPLOYMENT_ID>/exec
-// NUNCA a URL https://script.googleusercontent.com/... (é só o redirecionamento da resposta).
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/<SEU_DEPLOYMENT_ID>/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwv3VsA-zSYymE_O2QPyNIks3qIo9cmBgYNSK7Xj2T5B29jfrzil1_PlhSi0u1uBnUa/exec";
 
 // Tempo máximo de espera pela resposta do Apps Script (cold start pode levar alguns segundos).
 const REQUEST_TIMEOUT_MS = 20000;
