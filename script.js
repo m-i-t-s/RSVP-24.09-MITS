@@ -1,4 +1,10 @@
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgbP-6IFp_5mZm0BFSTLXAjxXSBjur7sMss4EszzFVARvr1kD_oh8sP9oJMeRGD-xa/exec";
+// URL /exec do Web App (Implantar → Gerenciar implantações → URL do app da Web).
+// Use SEMPRE a URL https://script.google.com/macros/s/<DEPLOYMENT_ID>/exec
+// NUNCA a URL https://script.googleusercontent.com/... (é só o redirecionamento da resposta).
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/<SEU_DEPLOYMENT_ID>/exec";
+
+// Tempo máximo de espera pela resposta do Apps Script (cold start pode levar alguns segundos).
+const REQUEST_TIMEOUT_MS = 20000;
 
 const form = document.getElementById("rsvpForm");
 const fields = {
@@ -44,6 +50,11 @@ form.addEventListener("submit", async (event) => {
 
   if (!selectedResponse) return;
 
+  if (!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/.test(APPS_SCRIPT_URL)) {
+    alert("O site ainda não está configurado com a URL /exec do Apps Script.");
+    return;
+  }
+
   setBusy(true);
 
   const payload = {
@@ -55,11 +66,16 @@ form.addEventListener("submit", async (event) => {
   };
 
   try {
+    // sendRSVP só resolve se o Apps Script respondeu {"ok":true}.
+    // Qualquer outra situação (rede, timeout, login do Google, erro na planilha) cai no catch.
     await sendRSVP(payload);
     showMessage(selectedResponse, nome);
   } catch (error) {
-    console.error(error);
-    alert("Não foi possível registrar sua resposta agora. Tente novamente.");
+    console.error("[RSVP] falha ao registrar:", error);
+    alert(
+      "Não foi possível registrar sua resposta agora. Tente novamente.\n\n" +
+        "(Detalhe técnico: " + (error && error.message ? error.message : error) + ")"
+    );
   } finally {
     setBusy(false);
   }
@@ -88,40 +104,59 @@ function showMessage(response, nome) {
   message.hidden = false;
 }
 
-function sendRSVP(payload) {
-  return new Promise((resolve, reject) => {
-    const url = new URL(APPS_SCRIPT_URL);
+/**
+ * Envia o RSVP por POST e LÊ a resposta do Apps Script.
+ *
+ * Por que funciona sem CORS quebrar:
+ * - body = URLSearchParams  → Content-Type application/x-www-form-urlencoded (automático).
+ *   Isso é uma "simple request": o navegador NÃO faz preflight OPTIONS
+ *   (o Apps Script não responde OPTIONS, por isso JSON/headers customizados falham).
+ * - mode "cors" (padrão) + redirect "follow": o /exec responde 302 para
+ *   script.googleusercontent.com, que devolve o JSON com Access-Control-Allow-Origin: *.
+ * - Isso só acontece quando o Web App está publicado como
+ *   "Executar como: Eu" + "Quem tem acesso: Qualquer pessoa".
+ *   Se estiver "Qualquer pessoa com Conta do Google", o Google devolve
+ *   a página de login (HTML) e a leitura abaixo falha → o site NÃO mostra sucesso.
+ */
+async function sendRSVP(payload) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
-    Object.entries(payload).forEach(([key, value]) => {
-      url.searchParams.set(key, value ?? "");
+  let response;
+  try {
+    response = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      body: new URLSearchParams(payload),
+      redirect: "follow",
+      credentials: "omit",
+      signal: controller.signal,
     });
-    url.searchParams.set("_t", Date.now().toString());
+  } catch (error) {
+    if (error && error.name === "AbortError") {
+      throw new Error("tempo esgotado aguardando o Apps Script");
+    }
+    throw new Error("erro de rede ou CORS: " + (error && error.message ? error.message : error));
+  } finally {
+    clearTimeout(timer);
+  }
 
-    const iframe = document.createElement("iframe");
-    iframe.hidden = true;
-    iframe.setAttribute("aria-hidden", "true");
+  const text = await response.text();
 
-    let finished = false;
-    const cleanup = () => {
-      if (iframe.isConnected) iframe.remove();
-    };
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch (_) {
+    // Resposta não é JSON: normalmente é a página de login do Google
+    // (deployment sem acesso "Qualquer pessoa") ou uma página de erro do Apps Script.
+    throw new Error(
+      "resposta inesperada do Apps Script (HTTP " + response.status + "). " +
+        "Verifique se o Web App está publicado para 'Qualquer pessoa'."
+    );
+  }
 
-    const timer = setTimeout(() => {
-      if (finished) return;
-      finished = true;
-      cleanup();
-      reject(new Error("Tempo esgotado ao registrar RSVP"));
-    }, 8000);
+  if (!data || data.ok !== true) {
+    throw new Error((data && data.error) || "o Apps Script recusou o registro");
+  }
 
-    iframe.addEventListener("load", () => {
-      if (finished) return;
-      finished = true;
-      clearTimeout(timer);
-      setTimeout(cleanup, 250);
-      resolve(true);
-    });
-
-    iframe.src = url.toString();
-    document.body.appendChild(iframe);
-  });
+  return data;
 }
