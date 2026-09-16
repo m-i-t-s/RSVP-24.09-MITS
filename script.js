@@ -1,5 +1,5 @@
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgbP-6IFp_5mZmOBFSTLXAjxXSBjur7sMss4EszzFVARvrlkD_oh8sP9oJMeRGD-xa/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpW_ekuB_8jY7p7WCSp6Yh4ik1gqX6PggNHYrUiVA/dev";
 
 const form = document.getElementById("rsvpForm");
 const fields = {
