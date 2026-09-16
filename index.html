@@ -13,7 +13,24 @@
     <section class="stage" aria-label="RSVP Coordenadas Improváveis">
       <img class="artwork" src="assets/layout.svg" alt="Convite Coordenadas Improváveis" />
 
-      <form id="rsvpForm" class="rsvp-form" novalidate>
+      <form
+        id="rsvpForm"
+        class="rsvp-form"
+        name="rsvp"
+        method="POST"
+        action="/obrigada.html"
+        data-netlify="true"
+        netlify-honeypot="bot-field"
+        novalidate
+      >
+        <input type="hidden" name="form-name" value="rsvp" />
+        <input type="hidden" name="resposta" value="SIM" />
+        <input type="hidden" id="origem" name="origem" value="" />
+
+        <p hidden>
+          <label>Não preencha este campo: <input name="bot-field" /></label>
+        </p>
+
         <label class="sr-only" for="nome">Nome</label>
         <input
           id="nome"
@@ -47,13 +64,13 @@
           placeholder="EMAIL"
         />
 
-        <button class="choice choice-yes" type="submit" data-response="SIM" aria-label="Sim, estarei lá"></button>
+        <button class="choice choice-yes" type="submit" aria-label="Sim, estarei lá"></button>
       </form>
 
       <div class="message" id="message" hidden aria-live="polite">
-        <strong id="messageTitle"></strong>
+        <strong id="messageTitle">PRESENÇA CONFIRMADA</strong>
         <span id="messageText"></span>
-        <button type="button" id="changeAnswer">ALTERAR RESPOSTA</button>
+        <button type="button" id="changeAnswer">ALTERAR DADOS</button>
       </div>
     </section>
 

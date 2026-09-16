@@ -1,50 +1,48 @@
-# RSVP — Coordenadas Improváveis
+# RSVP — Coordenadas Improváveis (Netlify Forms)
 
-Esta versão usa **o SVG original em `assets/layout.svg` como a arte da página**. A arte não foi redesenhada em HTML/CSS.
+Esta versão usa Netlify Forms. Não usa Google Apps Script nem Google Sheets.
 
-## GitHub Pages
+## Arquivos para o GitHub
 
-Os arquivos `index.html`, `style.css`, `script.js` e a pasta `assets` devem ficar na raiz do repositório.
+Suba todos estes arquivos na raiz do repositório:
 
-Depois:
+- `index.html`
+- `style.css`
+- `script.js`
+- `obrigada.html`
+- `netlify.toml`
+- `assets/layout.svg`
 
-1. Settings → Pages
-2. Source → Deploy from a branch
-3. Branch → `main`
-4. Folder → `/(root)`
-5. Save
+Pode remover `apps-script.gs` do repositório: ele não é mais usado.
 
-## Formulário
+## Publicar na Netlify
 
-- Nome: obrigatório
-- Telefone: opcional
-- Email: opcional
-- Os botões de SIM e NÃO são áreas clicáveis posicionadas exatamente sobre os botões desenhados no SVG.
+1. Na Netlify, escolha **Import a Git repository → GitHub**.
+2. Selecione o repositório do RSVP.
+3. Branch: `main`.
+4. Não há build command.
+5. Publish directory: `.` (o `netlify.toml` já define isso).
+6. Faça o deploy.
+7. No painel do projeto, entre em **Forms** e confirme que **Form detection** está ativado.
+8. Se você ativar Form detection depois do primeiro deploy, faça um novo deploy.
 
-## Google Sheets
+A Netlify deve detectar um formulário chamado `rsvp`.
 
-Enquanto `script.js` estiver com:
+## Teste
 
-```js
-const APPS_SCRIPT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
-```
+Abra o endereço `.netlify.app`, preencha o formulário e clique em “SIM! ESTAREI LÁ”.
+Depois confira **Forms → rsvp → Submissions**.
 
-o site fica em modo de teste e não salva respostas.
+Os campos enviados são:
 
-Para salvar:
+- nome
+- telefone
+- email
+- resposta (`SIM`)
+- origem
 
-1. Crie uma planilha Google Sheets.
-2. Abra Extensões → Apps Script.
-3. Cole o conteúdo de `apps-script.gs`.
-4. No arquivo, cole o ID da planilha em `SHEET_ID`.
-5. Faça `Implantar → Nova implantação → Aplicativo da Web`.
-6. Execute como você e dê acesso a qualquer pessoa.
-7. Copie a URL `/exec`.
-8. Cole essa URL em `APPS_SCRIPT_URL` dentro de `script.js`.
-9. Faça commit da alteração no GitHub.
+Há também um honeypot anti-spam (`bot-field`).
 
-A aba `RSVP` será criada automaticamente com as colunas Data e hora, Nome, Telefone, Email, Resposta e Origem.
+## Importante
 
-## Celular
-
-No desktop o SVG aparece inteiro exatamente como foi criado. No celular, o mesmo SVG é usado duas vezes sem redesenhar a arte: primeiro a metade do RSVP em tamanho legível e, abaixo, a metade do convite.
+As submissões só são registradas quando o site está hospedado na Netlify. O GitHub continua sendo o repositório do código, mas o link enviado aos convidados deve ser o domínio da Netlify (ou um domínio próprio apontado para ela), não o GitHub Pages.
