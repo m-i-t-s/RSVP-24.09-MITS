@@ -1,5 +1,4 @@
-
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgbP-6IFp_5mZmOBFSTLXAjxXSBjur7sMss4EszzFVARvrlkD_oh8sP9oJMeRGD-xa/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgbP-6IFp_5mZm0BFSTLXAjxXSBjur7sMss4EszzFVARvr1kD_oh8sP9oJMeRGD-xa/exec";
 
 const form = document.getElementById("rsvpForm");
 const fields = {
@@ -56,13 +55,8 @@ form.addEventListener("submit", async (event) => {
   };
 
   try {
-    const configured = await sendRSVP(payload);
-
-    if (configured) {
-      showMessage(selectedResponse, nome);
-    } else {
-      showMessage("TESTE", nome);
-    }
+    await sendRSVP(payload);
+    showMessage(selectedResponse, nome);
   } catch (error) {
     console.error(error);
     alert("Não foi possível registrar sua resposta agora. Tente novamente.");
@@ -86,56 +80,48 @@ function showMessage(response, nome) {
   if (response === "SIM") {
     messageTitle.textContent = "PRESENÇA CONFIRMADA";
     messageText.textContent = `Obrigada, ${primeiroNome}.`;
-  } else if (response === "NÃO") {
+  } else {
     messageTitle.textContent = "RESPOSTA REGISTRADA";
     messageText.textContent = `Obrigada por avisar, ${primeiroNome}.`;
-  } else {
-    messageTitle.textContent = "MODO DE TESTE";
-    messageText.textContent = "O visual está funcionando, mas a planilha ainda não foi conectada.";
   }
 
   message.hidden = false;
 }
 
-async function sendRSVP(payload) {
-  const configured =
-    APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/") &&
-    APPS_SCRIPT_URL.endsWith("/exec");
+function sendRSVP(payload) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(APPS_SCRIPT_URL);
 
-  if (!configured) {
-    console.table(payload);
-    return false;
-  }
+    Object.entries(payload).forEach(([key, value]) => {
+      url.searchParams.set(key, value ?? "");
+    });
+    url.searchParams.set("_t", Date.now().toString());
 
-  const iframeName = "rsvp_" + Date.now();
+    const iframe = document.createElement("iframe");
+    iframe.hidden = true;
+    iframe.setAttribute("aria-hidden", "true");
 
-  const iframe = document.createElement("iframe");
-  iframe.name = iframeName;
-  iframe.style.display = "none";
+    let finished = false;
+    const cleanup = () => {
+      if (iframe.isConnected) iframe.remove();
+    };
 
-  const postForm = document.createElement("form");
-  postForm.method = "POST";
-  postForm.action = APPS_SCRIPT_URL;
-  postForm.target = iframeName;
-  postForm.style.display = "none";
+    const timer = setTimeout(() => {
+      if (finished) return;
+      finished = true;
+      cleanup();
+      reject(new Error("Tempo esgotado ao registrar RSVP"));
+    }, 8000);
 
-  Object.entries(payload).forEach(([key, value]) => {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = key;
-    input.value = value ?? "";
-    postForm.appendChild(input);
+    iframe.addEventListener("load", () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      setTimeout(cleanup, 250);
+      resolve(true);
+    });
+
+    iframe.src = url.toString();
+    document.body.appendChild(iframe);
   });
-
-  document.body.appendChild(iframe);
-  document.body.appendChild(postForm);
-
-  postForm.submit();
-
-  setTimeout(() => {
-    postForm.remove();
-    iframe.remove();
-  }, 3000);
-
-  return true;
 }
