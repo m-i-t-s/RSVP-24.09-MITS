@@ -1,11 +1,37 @@
 const SHEET_ID = "1Js1XzyZVBrAwmOV9h2gIO-sCD_MTz8l499_PfE9A5Is";
 const SHEET_NAME = "RSVP";
 
+function doGet(e) {
+  const p = (e && e.parameter) ? e.parameter : {};
+
+  // Sem dados de RSVP, funciona como teste de saúde do endpoint.
+  if (!p.resposta) {
+    return output({ ok: true, service: "MITS RSVP" });
+  }
+
+  return registrarRSVP_(p);
+}
+
 function doPost(e) {
+  const p = (e && e.parameter) ? e.parameter : {};
+  return registrarRSVP_(p);
+}
+
+function registrarRSVP_(p) {
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
 
   try {
+    const nome = String(p.nome || "").trim();
+    const telefone = String(p.telefone || "").trim();
+    const email = String(p.email || "").trim();
+    const resposta = String(p.resposta || "").trim().toUpperCase();
+    const origem = String(p.origem || "").trim();
+
+    if (!nome || !["SIM", "NÃO"].includes(resposta)) {
+      return output({ ok: false, error: "Dados inválidos" });
+    }
+
     const spreadsheet = SpreadsheetApp.openById(SHEET_ID);
     let sheet = spreadsheet.getSheetByName(SHEET_NAME);
 
@@ -25,17 +51,6 @@ function doPost(e) {
       sheet.setFrozenRows(1);
     }
 
-    const p = e.parameter || {};
-    const nome = String(p.nome || "").trim();
-    const telefone = String(p.telefone || "").trim();
-    const email = String(p.email || "").trim();
-    const resposta = String(p.resposta || "").trim().toUpperCase();
-    const origem = String(p.origem || "").trim();
-
-    if (!nome || !["SIM", "NÃO"].includes(resposta)) {
-      return output({ ok: false, error: "Dados inválidos" });
-    }
-
     sheet.appendRow([
       new Date(),
       nome,
@@ -51,10 +66,6 @@ function doPost(e) {
   } finally {
     lock.releaseLock();
   }
-}
-
-function doGet() {
-  return output({ ok: true, service: "MITS RSVP" });
 }
 
 function output(data) {
