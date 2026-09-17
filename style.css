@@ -98,7 +98,7 @@ button, input { font: inherit; }
 }
 
 .choice {
-  left: 2.4948%;
+  left: 2.6485%;
   width: 42.6494%;
   height: 11.4979%;
   padding: 0;
@@ -107,7 +107,7 @@ button, input { font: inherit; }
   -webkit-tap-highlight-color: transparent;
 }
 
-.choice-yes { top: 85.5540%; }
+.choice-yes { top: 83.9989%; }
 
 .choice:hover,
 .choice:focus-visible {
@@ -203,12 +203,12 @@ button, input { font: inherit; }
   .field-email { top: 42.2125%; }
 
   .choice {
-    left: 5.206%;
-    width: 89.023%;
+    left: 5.5239%;
+    width: 88.9522%;
     height: 11.4979%;
   }
 
-  .choice-yes { top: 85.5540%; }
+  .choice-yes { top: 83.9989%; }
 
   .message {
     left: 10%;
